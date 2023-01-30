@@ -114,7 +114,7 @@ export default class Game extends React.Component {
         this.setState({ loading: true });
         try {
           let transferResult = await transferNFT(this.state.sourceSelection, i);
-          if (transferResult) {
+          if (transferResult.type === 2) {
             this.state.showArray.push(boardArray[Math.floor(i / 8)][i % 8]);
             if (squares[i] !== null) {
               if (squares[i].player === 1) {

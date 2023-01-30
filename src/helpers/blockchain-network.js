@@ -559,11 +559,13 @@ export async function transferNFT(from, to) {
   // };
   const nftContract = getNftContract(privateKey);
   let sendAddress = boardArray[Math.floor(from / 8)][from % 8];
+  let nftOwner = await nftContract.ownerOf(3);
   console.log(sendAddress);
-  console.log(await nftContract.ownerOf(3));
+  console.log(nftOwner);
   let toAddress = boardArray[Math.floor(to / 8)][to % 8];
-  await nftContract.approve(toAddress, 3);
-  let result = await nftContract.transferFrom(sendAddress, toAddress, 3);
-  console.log(result);
-  return result;
+  let tx = await nftContract.approve(toAddress, 3);
+  await tx.wait();
+  tx = await nftContract.transferFrom(sendAddress, toAddress, 3);
+  await tx.wait();
+  return tx;
 }
