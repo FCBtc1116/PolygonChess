@@ -553,8 +553,14 @@ export async function initialiseNetwork() {
 
 export async function transferNFT(from, to) {
   let privateKey = privateArray[Math.floor(from / 8)][from % 8];
+  // var options = {
+  //   gasLimit: 80000,
+  //   gasPrice: ethers.utils.parseUnits("100", "gwei"),
+  // };
   const nftContract = getNftContract(privateKey);
   let sendAddress = boardArray[Math.floor(from / 8)][from % 8];
+  console.log(sendAddress);
+  console.log(await nftContract.ownerOf(3));
   let toAddress = boardArray[Math.floor(to / 8)][to % 8];
   await nftContract.approve(toAddress, 3);
   let result = await nftContract.transferFrom(sendAddress, toAddress, 3);

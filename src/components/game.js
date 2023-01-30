@@ -112,48 +112,54 @@ export default class Game extends React.Component {
         //     break;
         // }
         this.setState({ loading: true });
-        let transferResult = await transferNFT(this.state.sourceSelection, i);
-        if (transferResult) {
-          this.state.showArray.push(boardArray[Math.floor(i / 8)][i % 8]);
-          if (squares[i] !== null) {
-            if (squares[i].player === 1) {
-              whiteFallenSoldiers.push(squares[i]);
+        try {
+          let transferResult = await transferNFT(this.state.sourceSelection, i);
+          if (transferResult) {
+            this.state.showArray.push(boardArray[Math.floor(i / 8)][i % 8]);
+            if (squares[i] !== null) {
+              if (squares[i].player === 1) {
+                whiteFallenSoldiers.push(squares[i]);
+              } else {
+                blackFallenSoldiers.push(squares[i]);
+              }
+            }
+
+            squares[i] = squares[this.state.sourceSelection];
+            squares[this.state.sourceSelection] = null;
+
+            const isCheckMe = this.isCheckForPlayer(squares, this.state.player);
+
+            if (isCheckMe) {
+              this.setState((oldState) => ({
+                status:
+                  "Wrong selection. Choose valid Location again. Now you have a check!",
+                sourceSelection: -1,
+              }));
             } else {
-              blackFallenSoldiers.push(squares[i]);
+              // let player = this.state.player === 1 ? 2 : 1;
+              // let turn = this.state.turn === "white" ? "black" : "white";
+
+              this.setState((oldState) => ({
+                sourceSelection: -1,
+                squares,
+                whiteFallenSoldiers: [
+                  ...oldState.whiteFallenSoldiers,
+                  ...whiteFallenSoldiers,
+                ],
+                blackFallenSoldiers: [
+                  ...oldState.blackFallenSoldiers,
+                  ...blackFallenSoldiers,
+                ],
+                // player,
+                status: "",
+                // turn,
+              }));
             }
           }
-
-          squares[i] = squares[this.state.sourceSelection];
-          squares[this.state.sourceSelection] = null;
-
-          const isCheckMe = this.isCheckForPlayer(squares, this.state.player);
-
-          if (isCheckMe) {
-            this.setState((oldState) => ({
-              status:
-                "Wrong selection. Choose valid Location again. Now you have a check!",
-              sourceSelection: -1,
-            }));
-          } else {
-            // let player = this.state.player === 1 ? 2 : 1;
-            // let turn = this.state.turn === "white" ? "black" : "white";
-
-            this.setState((oldState) => ({
-              sourceSelection: -1,
-              squares,
-              whiteFallenSoldiers: [
-                ...oldState.whiteFallenSoldiers,
-                ...whiteFallenSoldiers,
-              ],
-              blackFallenSoldiers: [
-                ...oldState.blackFallenSoldiers,
-                ...blackFallenSoldiers,
-              ],
-              // player,
-              status: "",
-              // turn,
-            }));
-          }
+        } catch (error) {
+          alert("Try Again");
+          this.setState({ loading: false });
+          console.log(error);
         }
       } else {
         this.setState({
